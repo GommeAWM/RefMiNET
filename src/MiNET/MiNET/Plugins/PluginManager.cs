@@ -67,7 +67,7 @@ namespace MiNET.Plugins
 
 		public PluginManager()
 		{
-
+			LoadPlugin(new TestPlugin());
 		}
 
 		internal void LoadPlugins()

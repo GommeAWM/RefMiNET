@@ -26,6 +26,9 @@
 using System.Collections.Generic;
 using fNbt;
 using MiNET.Items;
+using MiNET.Net;
+using MiNET.Utils.Nbt;
+using MiNET.Worlds;
 
 namespace MiNET.BlockEntities
 {
@@ -58,6 +61,39 @@ namespace MiNET.BlockEntities
 				items.Add(itemTag);
 			}
 		}
+		
+		public void CreatePair(ChestBlockEntity sideChest, Level level)
+		{
+			sideChest.Pair(Coordinates.X, Coordinates.Z);
+			Nbt sideChestNbt = sideChest.CreateNbt();
+			
+			var entityDataForSideChest = McpeBlockEntityData.CreateObject();
+			entityDataForSideChest.namedtag = sideChestNbt;
+			entityDataForSideChest.coordinates = sideChest.Coordinates;
+
+			level.RelayBroadcast(entityDataForSideChest);
+		}
+		
+		private void Pair(int sideChestX, int sideChestZ)
+		{
+			Compound.Add(new NbtInt("pairx", sideChestX));
+			Compound.Add(new NbtInt("pairz", sideChestZ));
+		}
+
+		private Nbt CreateNbt()
+		{
+			return new Nbt
+			{
+				NbtFile = new NbtFile
+				{
+					BigEndian = false,
+					UseVarInt = true,
+					RootTag = Compound
+				}
+			};
+		}
+
+		public bool IsPaired() => Compound.Contains("pairx") && Compound.Contains("pairz");
 
 		public override NbtCompound GetCompound()
 		{

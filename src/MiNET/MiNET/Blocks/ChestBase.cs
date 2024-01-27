@@ -23,6 +23,7 @@
 
 #endregion
 
+using System.Linq;
 using System.Numerics;
 using log4net;
 using MiNET.BlockEntities;
@@ -52,13 +53,39 @@ namespace MiNET.Blocks
 		{
 			FacingDirection = ItemBlock.GetFacingDirectionFromEntity(player);
 
-			var chestBlockEntity = CreateBlockEntity();
+			ChestBlockEntity blockEntity = null;
+			
+			for (int i = 2; i <= 5; i++)
+			{
+				if ((FacingDirection is 2 or 3) && (i is 2 or 3))
+				{
+					continue;
+				}
+				if ((FacingDirection is 4 or 5) && (i is 4 or 5))
+				{
+					continue;
+				}
+
+				Block blockSide = Coordinates.GetBlockFromFace((BlockFace)i, world);
+				if (blockSide is Chest && blockSide.GetFacingDirection() == FacingDirection)
+				{
+					blockEntity = (ChestBlockEntity)world.GetBlockEntity(blockSide.Coordinates);
+				}
+			}
+
+			ChestBlockEntity chestBlockEntity = CreateBlockEntity();
 			chestBlockEntity.Coordinates = Coordinates;
 			world.SetBlockEntity(chestBlockEntity);
 
+			if (blockEntity is not null)
+			{
+				blockEntity.CreatePair(chestBlockEntity, world);
+				chestBlockEntity.CreatePair(blockEntity, world);
+			}
+
 			return false;
 		}
-
+		
 		public override bool Interact(Level world, Player player, BlockCoordinates blockCoordinates, BlockFace face, Vector3 faceCoord)
 		{
 			Log.Debug($"Opening chest inventory at {blockCoordinates}");

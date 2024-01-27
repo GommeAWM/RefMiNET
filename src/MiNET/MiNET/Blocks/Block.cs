@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using fNbt;
 using log4net;
@@ -83,6 +84,14 @@ namespace MiNET.Blocks
 		public virtual BlockStateContainer GetState()
 		{
 			return null;
+		}
+
+		public int GetFacingDirection()
+		{
+			IBlockState state = GetState().States.FirstOrDefault(s => s.Name.Equals("facing_direction"));
+			BlockStateInt block = (BlockStateInt) state;
+			if (block != null) return block.Value;
+			return -1;
 		}
 
 		public virtual BlockStateContainer GetGlobalState()

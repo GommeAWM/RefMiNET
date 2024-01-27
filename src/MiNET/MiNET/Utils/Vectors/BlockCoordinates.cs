@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using MiNET.Blocks;
+using MiNET.Worlds;
 using Newtonsoft.Json;
 
 namespace MiNET.Utils.Vectors
@@ -67,6 +69,26 @@ namespace MiNET.Utils.Vectors
 			Z = (int) Math.Floor(location.Z);
 		}
 
+		public Block GetBlockFromFace(BlockFace face, Level level)
+		{
+			switch (face)
+			{
+				case BlockFace.Up:
+					return level.GetBlock(X, Y + 1, Z);
+				case BlockFace.Down:
+					return level.GetBlock(X, Y - 1, Z);
+				case BlockFace.North:
+					return level.GetBlock(X, Y, Z - 1);
+				case BlockFace.South:
+					return level.GetBlock(X, Y, Z + 1);
+				case BlockFace.West:
+					return level.GetBlock(X - 1, Y, Z);
+				case BlockFace.East:
+					return level.GetBlock(X + 1, Y, Z);
+				default:
+					return level.GetBlock(X, Y, Z);
+			}
+		}
 
 		/// <summary>
 		///     Calculates the distance between two BlockCoordinates objects.
